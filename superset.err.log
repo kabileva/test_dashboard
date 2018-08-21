@@ -1,0 +1,76 @@
+/usr/local/lib/python2.7/dist-packages/pandas/_libs/__init__.py:4: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from .tslib import iNaT, NaT, Timestamp, Timedelta, OutOfBoundsDatetime
+/usr/local/lib/python2.7/dist-packages/pandas/__init__.py:26: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import (hashtable as _hashtable,
+/usr/local/lib/python2.7/dist-packages/pandas/core/dtypes/common.py:6: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import algos, lib
+/usr/local/lib/python2.7/dist-packages/pandas/core/util/hashing.py:7: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import hashing, tslib
+/usr/local/lib/python2.7/dist-packages/pandas/core/indexes/base.py:7: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import (lib, index as libindex, tslib as libts,
+/usr/local/lib/python2.7/dist-packages/pandas/tseries/offsets.py:21: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  import pandas._libs.tslibs.offsets as liboffsets
+/usr/local/lib/python2.7/dist-packages/pandas/core/ops.py:16: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import algos as libalgos, ops as libops
+/usr/local/lib/python2.7/dist-packages/pandas/core/indexes/interval.py:32: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs.interval import (
+/usr/local/lib/python2.7/dist-packages/pandas/core/internals.py:14: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import internals as libinternals
+/usr/local/lib/python2.7/dist-packages/pandas/core/sparse/array.py:33: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  import pandas._libs.sparse as splib
+/usr/local/lib/python2.7/dist-packages/pandas/core/window.py:36: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  import pandas._libs.window as _window
+/usr/local/lib/python2.7/dist-packages/pandas/core/groupby/groupby.py:68: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import (lib, reduction,
+/usr/local/lib/python2.7/dist-packages/pandas/core/reshape/reshape.py:30: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import algos as _algos, reshape as _reshape
+/usr/local/lib/python2.7/dist-packages/pandas/io/parsers.py:45: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  import pandas._libs.parsers as parsers
+/usr/local/lib/python2.7/dist-packages/pandas/io/pytables.py:50: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import algos, lib, writers as libwriters
+2018-08-13 18:28:05,536:INFO:werkzeug: * Running on http://0.0.0.0:8088/ (Press CTRL+C to quit)
+2018-08-13 18:28:05,614:INFO:werkzeug: * Restarting with stat
+/usr/local/lib/python2.7/dist-packages/pandas/_libs/__init__.py:4: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from .tslib import iNaT, NaT, Timestamp, Timedelta, OutOfBoundsDatetime
+/usr/local/lib/python2.7/dist-packages/pandas/__init__.py:26: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import (hashtable as _hashtable,
+/usr/local/lib/python2.7/dist-packages/pandas/core/dtypes/common.py:6: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import algos, lib
+/usr/local/lib/python2.7/dist-packages/pandas/core/util/hashing.py:7: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import hashing, tslib
+/usr/local/lib/python2.7/dist-packages/pandas/core/indexes/base.py:7: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import (lib, index as libindex, tslib as libts,
+/usr/local/lib/python2.7/dist-packages/pandas/tseries/offsets.py:21: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  import pandas._libs.tslibs.offsets as liboffsets
+/usr/local/lib/python2.7/dist-packages/pandas/core/ops.py:16: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import algos as libalgos, ops as libops
+/usr/local/lib/python2.7/dist-packages/pandas/core/indexes/interval.py:32: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs.interval import (
+/usr/local/lib/python2.7/dist-packages/pandas/core/internals.py:14: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import internals as libinternals
+/usr/local/lib/python2.7/dist-packages/pandas/core/sparse/array.py:33: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  import pandas._libs.sparse as splib
+/usr/local/lib/python2.7/dist-packages/pandas/core/window.py:36: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  import pandas._libs.window as _window
+/usr/local/lib/python2.7/dist-packages/pandas/core/groupby/groupby.py:68: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import (lib, reduction,
+/usr/local/lib/python2.7/dist-packages/pandas/core/reshape/reshape.py:30: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import algos as _algos, reshape as _reshape
+/usr/local/lib/python2.7/dist-packages/pandas/io/parsers.py:45: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  import pandas._libs.parsers as parsers
+/usr/local/lib/python2.7/dist-packages/pandas/io/pytables.py:50: RuntimeWarning: numpy.dtype size changed, may indicate binary incompatibility. Expected 96, got 88
+  from pandas._libs import algos, lib, writers as libwriters
+2018-08-13 18:28:09,520:WARNING:werkzeug: * Debugger is active!
+2018-08-13 18:28:09,521:INFO:werkzeug: * Debugger PIN: 182-388-432
+2018-08-13 18:28:15,501:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:15] "GET / HTTP/1.1" 302 -
+2018-08-13 18:28:15,509:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:15] "GET /superset/welcome HTTP/1.1" 302 -
+2018-08-13 18:28:16,686:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:16] "GET /login/ HTTP/1.1" 200 -
+2018-08-13 18:28:48,353:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:48] "POST /login/ HTTP/1.1" 302 -
+2018-08-13 18:28:48,361:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:48] "GET / HTTP/1.1" 302 -
+2018-08-13 18:28:48,662:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:48] "GET /superset/welcome HTTP/1.1" 200 -
+2018-08-13 18:28:49,642:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:49] "GET /dashboardmodelviewasync/api/read?_oc_DashboardModelViewAsync=changed_on&_od_DashboardModelViewAsync=desc HTTP/1.1" 200 -
+2018-08-13 18:28:49,663:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:49] "GET /superset/fave_dashboards/1/ HTTP/1.1" 200 -
+2018-08-13 18:28:49,732:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:49] "GET /superset/fave_slices/1/ HTTP/1.1" 200 -
+2018-08-13 18:28:49,734:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:49] "GET /superset/recent_activity/1/?limit=50 HTTP/1.1" 200 -
+2018-08-13 18:28:53,430:DEBUG:root:[36m[stats_logger] (incr) explore[0m
+2018-08-13 18:28:53,813:INFO:werkzeug:192.168.3.15 - - [13/Aug/2018 18:28:53] "GET /superset/explore/?form_data=%7B%22datasource%22%3A%2216__table%22%2C%22viz_type%22%3A%22table%22%2C%22slice_id%22%3A226%2C%22granularity_sqla%22%3Anull%2C%22time_grain_sqla%22%3Anull%2C%22since%22%3A%22100+years+ago%22%2C%22until%22%3A%22now%22%2C%22groupby%22%3A%5B%5D%2C%22metrics%22%3A%5B%5D%2C%22percent_metrics%22%3A%5B%5D%2C%22timeseries_limit_metric%22%3Anull%2C%22row_limit%22%3A10000%2C%22include_time%22%3Afalse%2C%22order_desc%22%3Atrue%2C%22all_columns%22%3A%5B%22tenant_id%22%2C%22entry_id%22%2C%22gid%22%2C%22sid%22%2C%22value%22%5D%2C%22order_by_cols%22%3A%5B%5D%2C%22adhoc_filters%22%3Anull%2C%22table_timestamp_format%22%3A%22%25Y-%25m-%25d+%25H%3A%25M%3A%25S%22%2C%22page_length%22%3A0%2C%22include_search%22%3Afalse%2C%22table_filter%22%3Afalse%2C%22align_pn%22%3Afalse%2C%22color_pn%22%3Atrue%2C%22filters%22%3A%5B%5D%2C%22limit%22%3A%220%22%7D&standalone=true&height=400 HTTP/1.1" 200 -
