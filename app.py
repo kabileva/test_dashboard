@@ -13,8 +13,8 @@ import dash_html_components as html
 
 from datetime import datetime as dt
 
-# import plotly.plotly as py
-# import plotly.graph_objs as go
+import plotly.plotly as py
+import plotly.graph_objs as go
 
 import MySQLdb
 import pandas as pd
@@ -22,6 +22,8 @@ import pandas as pd
 engine = create_engine('sqlite:///tutorial.db', echo=True)
  
 app = Flask(__name__)
+
+
  
 @app.route('/', methods = ['GET'])
 def home():
@@ -72,7 +74,6 @@ def logout():
 def superset_dashboard():
     return render_template("superset.html",url_base_pathname='/dummy')
 
-
 chart = dash.Dash(__name__, server=app)
 
 #The general layout
@@ -107,18 +108,22 @@ def update_graph_live(n): #arguments correspond to the input values
     df = pd.DataFrame( [[ij for ij in i] for i in rows] )
     df.rename(columns={0: 'tenant_id', 1: 'sid', 2: 'value', 3:'time'}, inplace=True);
     df = df.sort_values(['value'], ascending=[1]);
-
+    #Group by sid and get keys
+    keys = df.groupby('sid').groups.keys()
     #get username from cookies
     username = request.cookies.get('username')
+
+    #Filter by username
     df_new = df[(df.tenant_id==username)]
+    #Return data grouped by sid
     return {
         'data': 
-            [{'y': df_new['value'],
-                'x': df_new['time'],
+            [{'y': df_new[(df_new.sid==sid)]['value'],
+                'x': df_new[(df_new.sid==sid)]['time'],
                 'mode': 'markers',
                 'marker': {'size': 12}, 
-     
-            }],
+                'name': sid
+            } for sid in keys],
             'layout': {
                 'title': "{}'s data".format(username)
             }
@@ -126,13 +131,9 @@ def update_graph_live(n): #arguments correspond to the input values
 
 
 
-
-
 @app.route("/plotly-dash")
 def plotly_dash():
-
     return chart.index()
-    #return render_template("plotly-dash.html")
 
 
 if __name__ == "__main__":
