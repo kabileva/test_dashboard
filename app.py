@@ -79,12 +79,17 @@ chart = dash.Dash(__name__, server=app)
 #The general layout
 chart.layout = html.Div([
     dcc.Graph(
-            id='my-graph',
+        id='my-graph',
         ),
     dcc.Interval(
         id='interval-component',
         interval=1*1000, # in milliseconds
         n_intervals=0
+    ),
+    html.Button('Click Me', id='my-button'),
+    dcc.Graph(
+        id='bar-graph',
+        
     )
 ], style={'width': '500'})
 
@@ -97,7 +102,12 @@ def update_graph_live(n): #arguments correspond to the input values
     #connect to database
     conn = MySQLdb.connect(host="localhost", user="root", passwd="Katerina27", db="sample_data")
     cursor = conn.cursor()
-    cursor.execute('select tenant_id, sid, value, time from data_2');
+
+    #statement = 'select tenant_id, sid, value, time from real_data'
+    statement = 'SELECT entry_id, tenant_id, sid, value, time FROM ( \
+    SELECT entry_id, tenant_id, sid, value, time FROM real_data ORDER BY entry_id DESC LIMIT 50) sub \
+    ORDER BY entry_id ASC'
+    cursor.execute(statement);
 
     rows = cursor.fetchall()
     conn.commit()
@@ -106,8 +116,8 @@ def update_graph_live(n): #arguments correspond to the input values
 
     #add data to pandas table
     df = pd.DataFrame( [[ij for ij in i] for i in rows] )
-    df.rename(columns={0: 'tenant_id', 1: 'sid', 2: 'value', 3:'time'}, inplace=True);
-    df = df.sort_values(['value'], ascending=[1]);
+    df.rename(columns={0: 'entry_id', 1: 'tenant_id', 2: 'sid', 3: 'value', 4:'time'}, inplace=True);
+    #df = df.sort_values(['value'], ascending=[1]);
     #Group by sid and get keys
     keys = df.groupby('sid').groups.keys()
     #get username from cookies
@@ -119,9 +129,11 @@ def update_graph_live(n): #arguments correspond to the input values
     return {
         'data': 
             [{'y': df_new[(df_new.sid==sid)]['value'],
-                'x': df_new[(df_new.sid==sid)]['time'],
-                'mode': 'markers',
-                'marker': {'size': 12}, 
+                #'x': df_new[(df_new.sid==sid)]['time'],
+                'x': range(len(df_new)),
+                #'mode': 'markers',
+                #'marker': {'size': 12}, 
+                'type':'line',
                 'name': sid
             } for sid in keys],
             'layout': {
@@ -129,6 +141,67 @@ def update_graph_live(n): #arguments correspond to the input values
             }
     }
 
+@chart.callback(
+    dash.dependencies.Output('bar-graph','figure'),
+    [dash.dependencies.Input('my-button', 'n_clicks')],
+    [dash.dependencies.State('interval-component', 'n_intervals')])
+def update_bar_graph(n, n_intervals): #arguments correspond to the input values
+    print(n)
+    #connect to database
+    if n:
+        conn = MySQLdb.connect(host="localhost", user="root", passwd="Katerina27", db="sample_data")
+        cursor = conn.cursor()
+        cursor.execute('select tenant_id, sid, value, time from data_2');
+
+        rows = cursor.fetchall()
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        #add data to pandas table
+        df = pd.DataFrame( [[ij for ij in i] for i in rows] )
+        df.rename(columns={0: 'tenant_id', 1: 'sid', 2: 'value', 3:'time'}, inplace=True);
+        df = df.sort_values(['value'], ascending=[1]);
+        #Group by sid and get keys
+        keys = df.groupby('sid').groups.keys()
+        #get username from cookies
+        username = request.cookies.get('username')
+
+        #Filter by username
+        df_new = df[(df.tenant_id==username)]
+        if n%2 == 0:
+
+            #Return data grouped by sid
+            return {
+                'data': 
+                    [{'y': df_new[(df_new.sid==sid)]['value'],
+                        'x': df_new[(df_new.sid==sid)]['time'],
+                        #'mode': 'markers',
+                        #'marker': {'size': 12}, 
+                        'type':'bar',
+                        'name': sid
+                    } for sid in keys],
+                    'layout': {
+                        'title': "{}'s data".format(username)
+                    }
+            }
+        else:
+            return {
+                'data': 
+                    [{'y': df_new[(df_new.sid==sid)]['value'],
+                        'x': df_new[(df_new.sid==sid)]['time'],
+                        'mode': 'markers',
+                        'marker': {'size': 12}, 
+                        #'type':'bar',
+                        'name': sid
+                    } for sid in keys],
+                    'layout': {
+                        'title': "{}'s data".format(username)
+                    }
+            }
+    return   {
+        'data': []
+    }
 
 
 @app.route("/plotly-dash")
