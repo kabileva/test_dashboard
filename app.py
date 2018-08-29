@@ -1,3 +1,5 @@
+from schema import schema
+
 from flask import Flask
 from flask import Flask, flash, redirect, render_template, request, session, abort
 import os
@@ -19,10 +21,21 @@ import plotly.graph_objs as go
 import MySQLdb
 import pandas as pd
 
+from flask_graphql import GraphQLView
+
+
 engine = create_engine('sqlite:///tutorial.db', echo=True)
  
 app = Flask(__name__)
 
+app.add_url_rule(
+    '/graphql',
+    view_func=GraphQLView.as_view(
+        'graphql',
+        schema=schema,
+        graphiql=True # for having the GraphiQL interface
+    )
+)
 
  
 @app.route('/', methods = ['GET'])
@@ -30,10 +43,6 @@ def home():
     if not session.get('logged_in'):
         return render_template('login.html')
     else:
-        # req = requests.get('http://192.168.1.182:8088/login/', data = {'HTTP_X_PROXY_REMOTE_USER': 'kate_multitenancy'})
-        # req = requests.post('http://192.168.1.182:8088/login/', data = {'HTTP_X_PROXY_REMOTE_USER': 'kate_multitenancy'})
-        # req = requests.get('http://192.168.1.182:8088/', data = {'HTTP_X_PROXY_REMOTE_USER': 'kate_multitenancy'})
-        # req = requests.post('http://192.168.1.182:8088/', data = {'HTTP_X_PROXY_REMOTE_USER': 'kate_multitenancy'})
         return render_template('index.html')
 
  
@@ -54,12 +63,6 @@ def do_admin_login():
         resp = make_response(render_template('index.html'))
         resp.set_cookie('username', POST_USERNAME)
         return resp 
-        
-        # req = requests.get('http://192.168.1.182:8088/login/', data = {'H                                      TTP_X_PROXY_REMOTE_USER': 'kate_multitenancy'})
-        # req = requests.post('http://192.168.1.182:8088/login/', data = {'HTTP_X_PROXY_REMOTE_USER': 'kate_multitenancy'})
-        # req = requests.get('http://192.168.1.182:8088/', data = {'HTTP_X_PROXY_REMOTE_USER': 'kate_multitenancy'})
-        # req = requests.post('http://192.168.1.182:8088/',  data = {'HTTP_X_PROXY_REMOTE_USER': 'kate_multitenancy'})
-
     else:
         flash('wrong password or username!')
         return render_template('login.html')
@@ -89,7 +92,6 @@ chart.layout = html.Div([
     html.Button('Click Me', id='my-button'),
     dcc.Graph(
         id='bar-graph',
-        
     )
 ], style={'width': '500'})
 
@@ -99,109 +101,130 @@ chart.layout = html.Div([
     dash.dependencies.Output('my-graph','figure'),
     [dash.dependencies.Input('interval-component', 'n_intervals')])
 def update_graph_live(n): #arguments correspond to the input values
-    #connect to database
-    conn = MySQLdb.connect(host="localhost", user="root", passwd="Katerina27", db="sample_data")
-    cursor = conn.cursor()
-
-    #statement = 'select tenant_id, sid, value, time from real_data'
-    statement = 'SELECT entry_id, tenant_id, sid, value, time FROM ( \
-    SELECT entry_id, tenant_id, sid, value, time FROM real_data ORDER BY entry_id DESC LIMIT 50) sub \
-    ORDER BY entry_id ASC'
-    cursor.execute(statement);
-
-    rows = cursor.fetchall()
-    conn.commit()
-    cursor.close()
-    conn.close()
-
     #add data to pandas table
-    df = pd.DataFrame( [[ij for ij in i] for i in rows] )
-    df.rename(columns={0: 'entry_id', 1: 'tenant_id', 2: 'sid', 3: 'value', 4:'time'}, inplace=True);
-    #df = df.sort_values(['value'], ascending=[1]);
-    #Group by sid and get keys
-    keys = df.groupby('sid').groups.keys()
-    #get username from cookies
-    username = request.cookies.get('username')
-
-    #Filter by username
-    df_new = df[(df.tenant_id==username)]
-    #Return data grouped by sid
-    return {
-        'data': 
-            [{'y': df_new[(df_new.sid==sid)]['value'],
-                #'x': df_new[(df_new.sid==sid)]['time'],
-                'x': range(len(df_new)),
-                #'mode': 'markers',
-                #'marker': {'size': 12}, 
-                'type':'line',
-                'name': sid
-            } for sid in keys],
-            'layout': {
-                'title': "{}'s data".format(username)
-            }
-    }
+    query = '{ \
+            allData { \
+                edges {\
+                node {\
+                    id\
+                    value\
+                    time \
+                    tenant {\
+                        id\
+                        name\
+                    }  \
+                    sensor {\
+                        id\
+                        name\
+                    }\
+                }\
+                }\
+            }\
+            }'
+    result = schema.execute(query)
+    if result.data and result.data['allData']:
+        data = result.data['allData']['edges']
+        #add data to pandas table
+        df = pd.DataFrame( [[i['node']['tenant']['name'], i['node']['sensor']['name'], i['node']['value'], i['node']['time']] for i in data])
+        df.rename(columns={0: 'tenant_id', 1: 'sid', 2: 'value', 3:'time'}, inplace=True);
+        #Group by sid and get keys
+        keys = df.groupby('sid').groups.keys()
+        #get username from cookies
+        username = request.cookies.get('username')
+        #Filter by username
+        df_tenant = df[(df.tenant_id==username)]
+        df_tenant = df
+        #Return data grouped by sid
+        return {
+                'data': [{
+                        'y': df_tenant[(df_tenant.sid==sid)]['value'],
+                        #'x': df_tenant[(df_tenant.sid==sid)]['time'],
+                        'x': range(len(df_tenant)),
+                        #'mode': 'markers',
+                        #'marker': {'size': 12}, 
+                        'type':'line',
+                        'name': sid
+                        } for sid in keys],
+                        'layout': {
+                            'title': "{}'s data".format(username)
+                        }
+                }
 
 @chart.callback(
     dash.dependencies.Output('bar-graph','figure'),
     [dash.dependencies.Input('my-button', 'n_clicks')],
     [dash.dependencies.State('interval-component', 'n_intervals')])
-def update_bar_graph(n, n_intervals): #arguments correspond to the input values
-    print(n)
+def update_bar_graph(n,n_intervals): #arguments correspond to the input values
     #connect to database
     if n:
-        conn = MySQLdb.connect(host="localhost", user="root", passwd="Katerina27", db="sample_data")
-        cursor = conn.cursor()
-        cursor.execute('select tenant_id, sid, value, time from data_2');
+        query = '{ \
+                allData { \
+                    edges {\
+                    node {\
+                        id\
+                        value\
+                        time\
+                        tenant {\
+                            id\
+                            name\
+                        }  \
+                        sensor {\
+                            id\
+                            name\
+                        }\
+                    }\
+                    }\
+                }\
+                }'
+        result = schema.execute(query)
+        if result.data and result.data['allData']:
+            data = result.data['allData']['edges']
+            #add data to pandas table
+            df = pd.DataFrame( [[i['node']['tenant']['name'], i['node']['sensor']['name'], i['node']['value'], i['node']['time']] for i in data])
+            df.rename(columns={0: 'tenant_id', 1: 'sid', 2: 'value', 3:'time'}, inplace=True);
+            #Group by sid and get keys
+            keys = df.groupby('sid').groups.keys()
+            #get username from cookies
+            username = request.cookies.get('username')
+            #Filter by username
+            df_tenant= df[(df.tenant_id==username)]
+            if n%2 == 0:
 
-        rows = cursor.fetchall()
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        #add data to pandas table
-        df = pd.DataFrame( [[ij for ij in i] for i in rows] )
-        df.rename(columns={0: 'tenant_id', 1: 'sid', 2: 'value', 3:'time'}, inplace=True);
-        df = df.sort_values(['value'], ascending=[1]);
-        #Group by sid and get keys
-        keys = df.groupby('sid').groups.keys()
-        #get username from cookies
-        username = request.cookies.get('username')
-
-        #Filter by username
-        df_new = df[(df.tenant_id==username)]
-        if n%2 == 0:
-
-            #Return data grouped by sid
-            return {
-                'data': 
-                    [{'y': df_new[(df_new.sid==sid)]['value'],
-                        'x': df_new[(df_new.sid==sid)]['time'],
-                        #'mode': 'markers',
-                        #'marker': {'size': 12}, 
-                        'type':'bar',
-                        'name': sid
-                    } for sid in keys],
-                    'layout': {
-                        'title': "{}'s data".format(username)
-                    }
-            }
-        else:
-            return {
-                'data': 
-                    [{'y': df_new[(df_new.sid==sid)]['value'],
-                        'x': df_new[(df_new.sid==sid)]['time'],
-                        'mode': 'markers',
-                        'marker': {'size': 12}, 
-                        #'type':'bar',
-                        'name': sid
-                    } for sid in keys],
-                    'layout': {
-                        'title': "{}'s data".format(username)
-                    }
-            }
-    return   {
-        'data': []
-    }
+                #Return data grouped by sid
+                return {
+                    'data': [{
+                            'y': df_tenant[(df_tenant.sid==sid)]['value'],
+                            #'x': df_tenant[(df_tenant.sid==sid)]['time'],
+                            'x': range(len(df_tenant[(df_tenant.sid==sid)])),
+                            'type':'bar',
+                            'name': sid
+                            } for sid in keys],
+                            'layout': {
+                                'title': "{}'s data".format(username)
+                            }
+                        }
+            else:
+                return {
+                    'data': [{
+                            'y': df_tenant[(df_tenant.sid==sid)]['value'],
+                            #'x': df_tenant[(df_tenant.sid==sid)]['time'],
+                            'x': range(len(df_tenant[(df_tenant.sid==sid)])),
+                            'mode': 'markers',
+                            'marker': {'size': 12}, 
+                            'name': sid
+                            } for sid in keys],
+                            'layout': {
+                                'title': "{}'s data".format(username)
+                            }
+                        }
+    #return some fake data to avoid null error
+    return  {
+            'data': {
+                    'y':[0],
+                    'x': [0],
+                    'type':'line'
+                }
+            }       
 
 
 @app.route("/plotly-dash")
