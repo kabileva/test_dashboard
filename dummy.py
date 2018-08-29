@@ -1,8 +1,10 @@
+#run to add users to DB
+
 import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from tabledef import *
- 
+
 engine = create_engine('sqlite:///tutorial.db', echo=True)
  
 # create a Session
