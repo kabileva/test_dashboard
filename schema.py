@@ -15,7 +15,7 @@ class Tenant(SQLAlchemyObjectType):
 class TenantConnection(relay.Connection):
     class Meta:
         node = Tenant
-
+        
 
 class Sensor(SQLAlchemyObjectType):
     class Meta:
@@ -42,20 +42,26 @@ class DataConnections(relay.Connection):
 class Query(graphene.ObjectType):
     nodes = relay.Node.Field()
 
+    tenant_id = graphene.Field(Tenant, id = graphene.Argument(type=graphene.Int, required=False), name = graphene.Argument(type=graphene.String, required=False))
+    tenant_name =  graphene.Field(lambda: Tenant, name = graphene.String())
     all_tenants = SQLAlchemyConnectionField(TenantConnection, sort=None)
   
-  # Allows sorting over multiple columns, by default over the primary key
+   # Allows sorting over multiple columns, by default over the primary key
     all_data = SQLAlchemyConnectionField(DataConnections)
     # Disable sorting over this field
     all_sensors = SQLAlchemyConnectionField(SensorConnection, sort=None)
 
-    tenant = graphene.Field(Tenant, id = graphene.Argument(type=graphene.Int, required=False))
-
-    def resolve_tenant(self, info, id):
+    
+    def resolve_tenant_id(self, info, id):
         #return name
         # name = args.get("name")
         query = Tenant.get_query(info)
-        output = query.filter(Tenant.id == id).first()
+        output = query.filter(TenantModel.id == id).first()
+        return output
+    def resolve_tenant_name(self, info, name):
+        #return name
+        query = Tenant.get_query(info)
+        output = query.filter(TenantModel.name == name).first()
         return output
 
 schema = graphene.Schema(query=Query)

@@ -103,7 +103,7 @@ chart.layout = html.Div([
 def update_graph_live(n): #arguments correspond to the input values
     #add data to pandas table
     query = '{ \
-            allData { \
+            allData(last: 20) { \
                 edges {\
                 node {\
                     id\
@@ -158,7 +158,7 @@ def update_bar_graph(n,n_intervals): #arguments correspond to the input values
     #connect to database
     if n:
         query = '{ \
-                allData { \
+                allData(last: 20) { \
                     edges {\
                     node {\
                         id\

@@ -4,7 +4,7 @@ from sqlalchemy.orm import (scoped_session, sessionmaker, relationship,
                             backref)
 from sqlalchemy.ext.declarative import declarative_base
 
-engine = create_engine('mysql://root:pass@localhost/sample_data', convert_unicode=True)
+engine = create_engine('mysql://root:Katerina27@localhost/sample_data', convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
