@@ -34,12 +34,12 @@ class Data(Base):
     tenant_id = Column(Integer, ForeignKey('tenant.id'))
     sensor = relationship(
         Sensor,
-        backref=backref('data_values',
+        backref=backref('sensor',
                         uselist=True,
                         cascade='delete,all'))
     tenant = relationship(
     Tenant,
-    backref=backref('data_values',
+    backref=backref('tenant',
                     uselist=True,
                     cascade='delete,all'))
 

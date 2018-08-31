@@ -101,45 +101,39 @@ chart.layout = html.Div([
     dash.dependencies.Output('my-graph','figure'),
     [dash.dependencies.Input('interval-component', 'n_intervals')])
 def update_graph_live(n): #arguments correspond to the input values
-    #add data to pandas table
+    #get username from cookies
+    username = request.cookies.get('username')
     query = '{ \
-            allData(last: 20) { \
-                edges {\
-                node {\
+            dataByTenantName(tenantName: "%s") {\
+                id\
+                value\
+                time\
+                tenant {\
                     id\
-                    value\
-                    time \
-                    tenant {\
-                        id\
-                        name\
-                    }  \
-                    sensor {\
-                        id\
-                        name\
+                    name\
+                    }\
+                sensor {\
+                    id\
+                    name\
                     }\
                 }\
-                }\
-            }\
-            }'
+            }'%(username)
+
     result = schema.execute(query)
-    if result.data and result.data['allData']:
-        data = result.data['allData']['edges']
+    if result and result.data:
+        data = result.data['dataByTenantName']
         #add data to pandas table
-        df = pd.DataFrame( [[i['node']['tenant']['name'], i['node']['sensor']['name'], i['node']['value'], i['node']['time']] for i in data])
+        df = pd.DataFrame( [[i['tenant']['name'], i['sensor']['name'], i['value'], i['time']] for i in data])
         df.rename(columns={0: 'tenant_id', 1: 'sid', 2: 'value', 3:'time'}, inplace=True);
         #Group by sid and get keys
         keys = df.groupby('sid').groups.keys()
-        #get username from cookies
-        username = request.cookies.get('username')
-        #Filter by username
-        df_tenant = df[(df.tenant_id==username)]
-        df_tenant = df
+
         #Return data grouped by sid
         return {
                 'data': [{
-                        'y': df_tenant[(df_tenant.sid==sid)]['value'],
+                        'y': df[(df.sid==sid)]['value'],
                         #'x': df_tenant[(df_tenant.sid==sid)]['time'],
-                        'x': range(len(df_tenant)),
+                        'x': range(len(df[(df.sid==sid)])),
                         #'mode': 'markers',
                         #'marker': {'size': 12}, 
                         'type':'line',
@@ -157,45 +151,40 @@ def update_graph_live(n): #arguments correspond to the input values
 def update_bar_graph(n,n_intervals): #arguments correspond to the input values
     #connect to database
     if n:
+        #get username from cookies
+        username = request.cookies.get('username')
         query = '{ \
-                allData(last: 20) { \
-                    edges {\
-                    node {\
+                dataByTenantName(tenantName: "%s") {\
+                    id\
+                    value\
+                    time\
+                    tenant {\
                         id\
-                        value\
-                        time\
-                        tenant {\
-                            id\
-                            name\
-                        }  \
-                        sensor {\
-                            id\
-                            name\
+                        name\
+                        }\
+                    sensor {\
+                        id\
+                        name\
                         }\
                     }\
-                    }\
-                }\
-                }'
+                }'%(username)
         result = schema.execute(query)
-        if result.data and result.data['allData']:
-            data = result.data['allData']['edges']
+        if result and result.data:
+            data = result.data['dataByTenantName']
             #add data to pandas table
-            df = pd.DataFrame( [[i['node']['tenant']['name'], i['node']['sensor']['name'], i['node']['value'], i['node']['time']] for i in data])
+            df = pd.DataFrame( [[i['tenant']['name'], i['sensor']['name'], i['value'], i['time']] for i in data])
             df.rename(columns={0: 'tenant_id', 1: 'sid', 2: 'value', 3:'time'}, inplace=True);
             #Group by sid and get keys
             keys = df.groupby('sid').groups.keys()
-            #get username from cookies
-            username = request.cookies.get('username')
-            #Filter by username
-            df_tenant= df[(df.tenant_id==username)]
+
             if n%2 == 0:
 
                 #Return data grouped by sid
                 return {
                     'data': [{
-                            'y': df_tenant[(df_tenant.sid==sid)]['value'],
+                            'y': df[(df.sid==sid)]['value'],
                             #'x': df_tenant[(df_tenant.sid==sid)]['time'],
-                            'x': range(len(df_tenant[(df_tenant.sid==sid)])),
+                            'x': range(len(df[(df.sid==sid)])),
                             'type':'bar',
                             'name': sid
                             } for sid in keys],
@@ -206,9 +195,9 @@ def update_bar_graph(n,n_intervals): #arguments correspond to the input values
             else:
                 return {
                     'data': [{
-                            'y': df_tenant[(df_tenant.sid==sid)]['value'],
+                            'y': df[(df.sid==sid)]['value'],
                             #'x': df_tenant[(df_tenant.sid==sid)]['time'],
-                            'x': range(len(df_tenant[(df_tenant.sid==sid)])),
+                            'x': range(len(df[(df.sid==sid)])),
                             'mode': 'markers',
                             'marker': {'size': 12}, 
                             'name': sid
