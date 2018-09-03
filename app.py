@@ -104,7 +104,7 @@ def update_graph_live(n): #arguments correspond to the input values
     #get username from cookies
     username = request.cookies.get('username')
     query = '{ \
-            dataByTenantName(tenantName: "%s") {\
+            dataByTenantName(tenantName: "%s", last: 50) {\
                 id\
                 value\
                 time\

@@ -5,7 +5,7 @@ import random
 import time
 import datetime
 last_pushed = time.time()
-interval = 0.1 #seconds
+interval = 1 #seconds
 while True:
     if (last_pushed + interval) < time.time():
         conn = MySQLdb.connect(host="localhost", user="root", passwd="Katerina27", db="sample_data")
